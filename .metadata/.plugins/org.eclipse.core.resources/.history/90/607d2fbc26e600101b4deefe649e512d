@@ -1,0 +1,45 @@
+package com.example.samuraitravel.service;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.samuraitravel.entity.Favorite;
+import com.example.samuraitravel.repository.FavoriteRepository;
+
+@Service
+public class FavoriteService {
+
+    private final FavoriteRepository favoriteRepository;
+
+    public FavoriteService(FavoriteRepository favoriteRepository) {
+        this.favoriteRepository = favoriteRepository;
+    }
+
+    // お気に入り登録
+    @Transactional
+    public void add(Integer userId, Integer houseId) {
+        Favorite existing = favoriteRepository.findByUserIdAndHouseId(userId, houseId);
+
+        if (existing == null) {
+            Favorite favorite = new Favorite();
+            favorite.setUserId(userId);
+            favorite.setHouseId(houseId);
+            favoriteRepository.save(favorite);
+        }
+    }
+
+    // お気に入り解除
+    @Transactional
+    public void remove(Integer userId, Integer houseId) {
+        Favorite existing = favoriteRepository.findByUserIdAndHouseId(userId, houseId);
+
+        if (existing != null) {
+            favoriteRepository.delete(existing);
+        }
+    }
+
+    // お気に入り済みか確認
+    public boolean isFavorite(Integer userId, Integer houseId) {
+        return favoriteRepository.findByUserIdAndHouseId(userId, houseId) != null;
+    }
+}
