@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>レビュー投稿</title>
+</head>
+
+<body>
+
+<div class="container mt-4">
+
+    <h2 class="text-center mb-4">レビューを投稿する</h2>
+
+    <form th:action="@{/reviews/{houseId}(houseId=${house.id})}" 
+      th:object="${reviewForm}" 
+      method="post">
+      
+        <!-- houseId（隠し項目） -->
+        <input type="hidden" th:field="*{houseId}" th:value="${house.id}">
+
+		 <!-- 星評価 -->
+        <div class="mb-3">
+        <label class="form-label">評価</label>
+        <select class="form-select" th:field="*{rating}">
+            <option value="1">&#9733;&#9734;&#9734;&#9734;&#9734;</option>
+            <option value="2">&#9733;&#9733;&#9734;&#9734;&#9734;</option>
+            <option value="3">&#9733;&#9733;&#9733;&#9734;&#9734;</option>
+            <option value="4">&#9733;&#9733;&#9733;&#9733;&#9734;</option>
+            <option value="5">&#9733;&#9733;&#9733;&#9733;&#9733;</option>
+        </select>
+    </div>
+    
+    	 <!-- コメント -->
+        <div class="mb-3">
+            <label class="form-label">コメント</label>
+            <textarea class="form-control" th:field="*{comment}" rows="5"></textarea>
+   		</div>
+
+       
+        <!-- 送信ボタン -->
+        <button type="submit"
+                class="btn samuraitravel-btn text-white w-100">
+            投稿する
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>
