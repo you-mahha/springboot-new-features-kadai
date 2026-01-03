@@ -1,5 +1,7 @@
 package com.example.samuraitravel.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,20 +38,40 @@ public class FavoriteService {
 		House house = houseRepository.getReferenceById(houseId);
 
 		Favorite favorite = new Favorite();
-		favorite.setUserId(userId);
-		favorite.setHouseId(houseId);
+		favorite.setUser(user);
+		favorite.setHouse(house);
 		favoriteRepository.save(favorite);
 	}
 
 	// お気に入り解除
 	@Transactional
 	public void remove(Integer userId, Integer houseId) {
-		favoriteRepository.deleteByUserIdAndHouseId(userId, houseId);
+		User user = userRepository.getReferenceById(userId);
+		House house = houseRepository.getReferenceById(houseId);
+		
+		favoriteRepository.deleteByUserAndHouse(user, house);
 
 	}
 	
 	// お気に入り済みか確認
 		public boolean isFavorite(Integer userId, Integer houseId) {
-			return favoriteRepository.existsByUserIdAndHouseId(userId, houseId);
+			User user = userRepository.getReferenceById(userId);
+			House house = houseRepository.getReferenceById(houseId);
+			
+			return favoriteRepository.existsByUserAndHouse(user, house);
+		}
+		
+		// お気に入り一覧取得
+		public List<House> findFavoriteHouses(Integer userId) {
+			
+			User user = userRepository.getReferenceById(userId);
+
+		    List<Favorite> favorites = favoriteRepository.findByUser(user);
+
+		    // Favorite → House に変換
+		    return favoriteRepository.findByUser(user)
+		    		.stream()
+		    		.map(Favorite::getHouse)
+		            .toList();
 		}
 }

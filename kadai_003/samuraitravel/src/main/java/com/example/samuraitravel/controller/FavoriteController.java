@@ -1,11 +1,17 @@
 package com.example.samuraitravel.controller;
 
+import java.util.List;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model; // 追加
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.samuraitravel.entity.House; // 追加
 import com.example.samuraitravel.security.UserDetailsImpl;
 import com.example.samuraitravel.service.FavoriteService;
 
@@ -19,23 +25,37 @@ public class FavoriteController {
         this.favoriteService = favoriteService;
     }
 
-    // お気に入り登録
-    @PostMapping("/add")
-    public String add(
+    // お気に入り登録(Ajax切り替え)
+    @PostMapping("/toggle")
+    @ResponseBody
+    public boolean toggle(
         @RequestParam Integer houseId,
         @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        favoriteService.add(userDetails.getUser().getId(), houseId);
-        return "redirect:/houses/" + houseId;
+        Integer userId = userDetails.getUser().getId();
+        
+        if (favoriteService.isFavorite(userId, houseId)) {
+        	favoriteService.remove(userId, houseId);
+        	return false; // ハートにする
+        	} else {
+        		favoriteService.add(userId, houseId);
+        return true; // ♥にする
     }
+    }
+    
+    // ★ お気に入り一覧
+    @GetMapping
+    public String index(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            Model model) {
 
-    // お気に入り解除
-    @PostMapping("/remove")
-    public String remove(
-        @RequestParam Integer houseId,
-        @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
-        favoriteService.remove(userDetails.getUser().getId(), houseId);
-        return "redirect:/houses/" + houseId;
+        Integer userId = userDetails.getUser().getId();
+
+        List<House> favoriteHouses =
+                favoriteService.findFavoriteHouses(userId);
+
+        model.addAttribute("favoriteHouses", favoriteHouses);
+
+        return "favorites/index";
     }
 }

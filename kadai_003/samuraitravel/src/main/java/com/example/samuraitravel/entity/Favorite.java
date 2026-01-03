@@ -1,49 +1,52 @@
 package com.example.samuraitravel.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne; // お気に入り一覧に必要
+import jakarta.persistence.Table; 
 
 @Entity
 @Table(name = "favorites")
 public class Favorite {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    // ユーザーID
-    @Column(name = "user_id", nullable = false)
-    private Integer userId;
+	// ユーザーID
+	@ManyToOne
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 
-    // 民宿（house）ID
-    @Column(name = "house_id", nullable = false)
-    private Integer houseId;
+	// 民宿（house）ID
+	@ManyToOne
+	@JoinColumn(name = "house_id", nullable = false)
+	private House house;
 
-    public Integer getId() {
-        return id;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public Integer getUserId() {
-        return userId;
-    }
+	public User getUser() {
+		return user;
+	}
 
-    public Integer getHouseId() {
-        return houseId;
-    }
+	public House getHouse() {
+		return house;
+	}
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
+	public void setUser(User user) {
+		this.user = user;
+	}
 
-    public void setHouseId(Integer houseId) {
-        this.houseId = houseId;
-    }
+	public void setHouse(House house) {
+		this.house = house;
+	}
 }

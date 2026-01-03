@@ -50,25 +50,18 @@
 									<div sec:authorize="isAuthenticated()">
 
 										<!-- お気に入り済み（♥） -->
-										<form th:if="${isFavorite}" th:action="@{/favorites/remove}" method="post"
-											style="display:inline;">
-											<input type="hidden" name="houseId" th:value="${house.id}">
-											<button type="submit"
-												style="background:none; border:none; font-size:24px; color:red;">
-												&#9829;
-											</button>
-										</form>
 
-										<!-- 未登録（♡） -->
-										<form th:if="${!isFavorite}" th:action="@{/favorites/add}" method="post"
-											style="display:inline;">
-											<input type="hidden" name="houseId" th:value="${house.id}">
-											<button type="submit" style="background:none; border:none; font-size:24px;">
-												&#9825;
-											</button>
-										</form>
-
+										<button id="favorite-btn" th:data-house-id="${house.id}"
+											th:data-favorite="${isFavorite}"
+											style="background:none; border:none; font-size:24px; color:red; cursor:pointer;">
+											<span th:if="${isFavorite}" style="color:red;">&#9829;</span>
+											<span th:unless="${isFavorite}">&#9825;</span>
+										</button>
 									</div>
+
+									<!-- CSRF -->
+									<meta name="_csrf" th:content="${_csrf.token}">
+									<meta name="_csrf_header" th:content="${_csrf.headerName}">
 
 									<div class="row pb-2 mb-2 border-bottom">
 										<div class="col-4">
@@ -271,6 +264,37 @@
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
 	<script th:src="@{/js/flatpickr.js}"></script>
+
+	<script> // お気に入り登録追加により追加入力
+		document.getElementById("favorite-btn")?.addEventListener("click", function () {
+
+			const btn = this;
+			const houseId = btn.dataset.houseId;
+			const csrfToken = document.querySelector('input[name="_csrf"]').value;
+
+			fetch("/favorites/toggle", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+					"X-CSRF-TOKEN": csrfToken
+				},
+				body: "houseId=" + houseId
+			})
+				.then(response => response.json())
+				.then(isFavorite => {
+					btn.innerHTML = isFavorite ? "&#9829;" : "&#9825;";
+				})
+				.catch(error => {
+					console.error(error);
+					alert("お気に入りの切り替えに失敗しました");
+				});
+		});
+	</script>
+	
+	<script th:src="@{/js/favorite.js}"></script> // jsデータを読み取る
+
+
+	<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"> // CSRFトークン
 </body>
 
 </html>
