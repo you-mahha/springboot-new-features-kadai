@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>レビュー編集</title>
+</head>
+<body>
+	
+	<form th:action="@{/reviews/{id}/update(id=${review.id})}"
+      th:object="${reviewForm}"
+      method="post">
+
+    <select class="form-select" th:field="*{rating}">
+            <option value="1">&#9733;&#9734;&#9734;&#9734;&#9734;</option>
+            <option value="2">&#9733;&#9733;&#9734;&#9734;&#9734;</option>
+            <option value="3">&#9733;&#9733;&#9733;&#9734;&#9734;</option>
+            <option value="4">&#9733;&#9733;&#9733;&#9733;&#9734;</option>
+            <option value="5">&#9733;&#9733;&#9733;&#9733;&#9733;</option>
+        </select>
+
+    <textarea th:field="*{comment}"></textarea>
+
+    <button type="submit">更新</button>
+</form>
+
+</body>
+</html>
